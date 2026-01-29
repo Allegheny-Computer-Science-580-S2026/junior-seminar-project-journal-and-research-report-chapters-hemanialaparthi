@@ -10,7 +10,7 @@ format:
 natbiboptions: numbers
 # EDIT AT YOUR OWN PERIL #
 
-title: CollabLens - A Cross-Platform System for Semantic Summarization of Collaborative Changes
+title: CollabTrace - A Cross-Platform System for Semantic Summarization of Collaborative Changes
 
 firstreader: Professor Gregory M. Kapfhammer
 secondreader: Student Second Reader
