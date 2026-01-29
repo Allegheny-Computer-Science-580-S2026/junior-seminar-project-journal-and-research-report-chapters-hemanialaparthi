@@ -10,7 +10,7 @@ format:
 natbiboptions: numbers
 # EDIT AT YOUR OWN PERIL #
 
-title: Junior Seminar Research Report Title
+title: CollabLens - A Cross-Platform System for Semantic Summarization of Collaborative Changes
 
 firstreader: Professor Gregory M. Kapfhammer
 secondreader: Student Second Reader
@@ -18,10 +18,10 @@ secondreader: Student Second Reader
 bibliography: references.bib
 
 author:
-  - name: A. Student
+  - name: Hemani Alaparthi
     affiliation:
       name: Allegheny College
-      address: 520 N. Main St., Box Q
+      address: 520 N. Main St., Box 1723
       city: Meadville
       state: Pennsylvania
       country: USA
