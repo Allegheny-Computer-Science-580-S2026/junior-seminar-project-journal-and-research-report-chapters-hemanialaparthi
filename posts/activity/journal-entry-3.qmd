@@ -15,28 +15,80 @@ developing your prototype, and presenting your work to others.
 ### Brainstorming Process
 
 - How did you generate and refine your research idea?
+
+    - I started with the observation that web tracing and user interaction monitoring lacks transparency. The initial concept was to create a tool that visualizes what data is being collected on web pages and also summarizes it in real-time.
+
 - What techniques or approaches did you use for brainstorming?
+
+    - Sketched wireframes on figma for the extension UI
+    - Researched existing browser extension architectures
+    - Mapped out the data flow from content script → popup → backend
+
 - How did your idea evolve from your initial concept?
+
+    - Started with just a file and each version summarizer → evolved into a extension which provides chat features to find out changes, contributions and compare different version in the document to get changes.
+
 - What feedback did you receive and how did it shape your thinking?
+
+    - I got alot of feedback regarding the usuability of my tool. Many of the professors talked about not having a tool that does what is already done but instead a tool which will actually streamline the process. For
 
 ### Prototyping Experience
 
 - What was your approach to building the prototype?
+
+    - Built incrementally: first the content script to capture version, then the popup UI for visualization, and finally the Node.js backend for data persistence. Used a client-server model to separate concerns.
+
 - What challenges did you encounter during development?
+    - Content script injection timing and permissions
+    - CORS issues between extension and backend server
+    - Managing state across popup and background scripts
+
 - What successes or breakthroughs did you experience?
+
+    - Successfully implemented real-time data collection using Chrome's DOM APIs. Backend integration worked smoothly with Express.js. The separation of concerns made code maintainability easier. Both popup interfaces provide good UX for different workflows.
+
 - How did the actual prototype differ from your initial plans?
+
+    - Originally planned a simpler extension without backend storage. The addition of the backend increased complexity but significantly improved functionality.
 
 ### Presentation Experience
 
 - How did you prepare for presenting your work?
+
+    - Created well readable slides. Tested the full workflow (backend setup → extension loading → data collection) multiple times.
+
 - What went well during the presentation?
+
+    - The architecture diagram showing how components interact was well-received. Live demonstration of the extension collecting data was cool. People really liked the collaborative features in the popup.
+
 - What would you improve about your presentation?
+
+    - I could have spent more time on the motivation and use cases. Also, I should have anticipated more questions about privacy and security implications.
+
 - What questions or feedback did you receive?
+
+    - A lot of feedback on the reasoning of the design choices. Suggestions for additional features like export options and integration with other tools.
+
 - How did presenting your work help you understand it better?
+
+    - Presenting forced me to clearly articulate the problem I am solving and how my solution works. It also helped me find areas where I needed to deepen my understanding, such as the AI agent architecture and how to handle user data securely.
 
 ### Lessons Learned
 
 - What did you learn about the research process?
+
+    - User experience extends beyond features to include installation and configuration. Testing with fresh eyes (someone unfamiliar with the project) can really reveal usability issues.
+
 - What would you do differently next time?
+
+    - Version the prototype earlier and get user feedback sooner
+    - Balance feature additions with stability
+    - Divide work into smaller, more manageable tasks
+
 - How has this experience prepared you for future research projects?
+
+    - I now understand the importance of architecture decisions early. Full-stack thinking is very very essential like not only did I have to think about the backend implementation but also how to make the frontend user-friendly. Also, having my tool be usable by others is crucial for getting meaningful feedback.
+
 - What are your questions or concerns as you look towards writing your report's chapters?
+
+    - I am concerned about how to effectively communicate the technical details of my implementation while also making it accessible to a broader audience like I to make sure non-technical readers can understand the motivation and impact of my work without getting lost in code details.
