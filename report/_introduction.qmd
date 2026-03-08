@@ -1,47 +1,87 @@
 # Introduction
 
-This chapter describes your completed junior seminar research project,
-including the overall aims and the background motivating your research.
-Whenever possible, you should use one or more concrete examples and
-technical diagrams.
+This research presents CoTrace, a browser extension and backend system designed to automatically summarize version history changes in Google Workspace documents and detect individual contributor impact within collaborative writing environments. CoTrace operates by analyzing revision histories across Google Docs and Google Sheets, extracting edit patterns, attributing changes to specific contributors, and generating human-readable summaries of how documents evolved. The tool combines local browser-side processing with a secure backend to normalize changes, detect contribution patterns, and measure the significance of individual edits without requiring manual review of version histories.
 
-**Note for Junior Seminar**: This chapter should be approximately 5-7
-pages in length. Focus on clearly articulating your research problem,
-your approach, and why it matters. You don't need to provide exhaustive
-detail - prioritize clarity and coherence over comprehensiveness.
+To understand the necessity of tools like CoTrace, it is essential to recognize the challenges inherent in collaborative document management. As collaborative authoring has become standard practice across academia, software development, business, and creative industries, teams increasingly work asynchronously on shared documents through platforms like Google Workspace. These collaborative workflows generate extensive version histories that capture every edit, but this granular data creates an accessibility problem: while version histories contain complete records of who changed what, extracting meaningful insights about document evolution and individual contributions remains labor-intensive and time-consuming.
 
-It is often useful and necessary to separate the introduction into
-multiple sections. Several possible sections are proposed below, you
-can use these or distribute your introductory text into sections in
-another way.
+Existing version control systems present this information in ways optimized for technical precision rather than human comprehension. Google Docs displays version histories chronologically but requires manual review to understand the significance of changes or their cumulative effect. GitHub provides detailed diff information but primarily serves software development use cases and requires technical expertise. No current tool effectively summarizes multi-author edits, synthesizes change patterns into narrative form, or measures contribution impact in ways that are accessible to non-technical collaborators.
 
-The headings below propose _one way_ you might structure this section
-of the document.
+CoTrace addresses this gap by introducing automated change summarization and contributor detection specifically designed for the Google Workspace ecosystem. The browser extension integrates directly into Google Docs and Google Sheets, providing users with immediate access to version analytics, per-author contribution metrics, and semantic summaries of how specific edits shaped document evolution. The backend processes revision data, applies natural language processing to categorize change types, and implements contribution scoring algorithms to measure individual impact. This approach transforms version history from a difficult-to-parse record into actionable insights that improve collaboration and accountability.
 
 ## Motivation
 
+### The Collaborative Work Documentation Problem
+
+The motivation for CoTrace stems from a fundamental challenge in collaborative work environments: the difficulty of understanding document evolution and measuring individual contributions in real time. As asynchronous collaboration has become standard practice, particularly in teams, the volume of edits generated in shared documents has grown exponentially. This creates what we term the "version history accessibility problem" which is when complete edit records exist but extracting meaningful narratives about how work progressed and who contributed substantively still remains labor-intensive and time-consuming.
+
+This problem manifests across multiple domains. In academic settings, collaborative writing groups struggle to track which team members addressed which sections or resolved identified issues. In business environments, managers can spend hours manually reviewing version histories to understand what work was completed and by whom. In software documentation and content teams, identifying who introduced errors or which edits resolved critical issues requires extensive manual review. Current tools fail to bridge the gap between granular data edits and high-level understanding of the contribution patterns.
+
+The significance of this challenge extends beyond convenience. Accurate measurement of individual contributions affects real-world outcomes including performance evaluations, grade assignment in collaborative projects, promotion decisions in corporations, and recognition of intellectual labor. When contribution measurement relies on incomplete information or subjective assessment, the resulting decisions may be biased, unfair, or inaccurate. CoTrace addresses this by providing objective, automated measurement of contribution patterns in collaborative documents.
+
+### Current Limitations of Existing Solutions
+
+Version control and change tracking tools address different aspects of the collaboration problem but fail to solve the contribution measurement challenge comprehensively. Google Docs, for example, provides version history but presents changes chronologically and requires manual synthesis to extract meaning. GitHub excels at code change tracking but is optimized for technical workflows and includes steep learning curves for non-developers. Spreadsheet tools like Google Sheets lack sophisticated change tracking altogether. None of these systems provide semantic summarization of changes or automated contribution scoring designed for non-technical users.
+
+Furthermore, existing tools are primarily designed for retrospective analysis rather than real-time insight. Users must interrupt their workflow, navigate to version history interfaces, and spend time reviewing changes. This friction means that comprehensive understanding of document evolution often occurs only when necessary rather than continuously during collaboration.
+
+The CoTrace project builds upon existing version control tools by introducing a layer of intelligence specifically optimized for understanding collaboration dynamics in Google Workspace environments. Rather than replacing existing tools, CoTrace augments them with summarization and contribution detection capabilities designed for the non-technical collaborator.
+
 ## Current State of the Art
+
+### Version Control and Change Tracking Systems
+
+Version control represents a mature field with well-established tools and methodologies. Git, the dominant version control system, provides tracking of source code changes through commits, branches, and detailed diff information. While Git excels at managing code repositories and enabling collaboration among developers, it requires technical expertise to interpret diffs and understand how changes relate to broader project goals. The learning curve for non-technical users remains steep, limiting its applicability in domains like academic writing, business documentation, and creative collaboration.
+
+Google Docs and similar cloud-based collaborative editors provide version history functionality accessible to non-technical users. These systems automatically save versions and allow users to view changes over time. However, their version history interfaces present information chronologically and show only basic metadata about who edited when and the chunks of edits done. They lack semantic understanding of changes—users cannot easily ask questions like "what was the main point of this version?" or "which edits addressed the peer review feedback?" without manually reading through edits.
+
+### Gaps in Existing Solutions
+
+Despite progress in individual areas—version control, contribution measurement, and change summarization—no existing tool comprehensively addresses the problem of understanding collaborative document evolution and measuring contribution impact for non-technical users. The existing landscape consists of:
+
+- **Version control systems** (Git, Google Docs history) that provide complete but raw information
+- **Contribution measurement tools** that focus on code repositories or require manual input
+- **Collaboration analytics platforms** that focus on communication or time tracking rather than contribution to document content
+
+CoTrace represents the first integrated system designed specifically to address this gap by combining automated change summarization, contribution detection, and non-technical accessible interfaces for the Google Workspace ecosystem.
 
 ## Goals of the Project
 
+The primary objectives of CoTrace are to automate version history summarization, detect and measure individual contributions, provide transparent collaboration analytics, and enable fair assessment of collaborative work.
+
+**First, automate version history summarization.** CoTrace generates concise, semantic summaries of document changes that capture what evolved between versions without requiring users to manually review edit histories. Rather than presenting raw diffs or chronological lists, the tool synthesizes changes into human-readable narratives that highlight the significance and nature of modifications.
+
+**Second, detect and measure individual contributions.** CoTrace attributes edits to specific contributors and implements algorithms to measure the significance of individual contributions. This goes beyond simple edit counts to assess the substantive impact of changes, including whether edits resolved key issues, introduced errors, or synthesized feedback into coherent document structure.
+
+**Third, provide transparent collaboration analytics.** By aggregating contribution data across multiple documents and time periods, CoTrace creates analytics dashboards that make collaboration patterns visible. These visualizations enable teams to understand who contributed to what, when contributions occurred, and the relative impact of different team members.
+
+**Fourth, enable fair assessment of collaborative work.** By providing objective, detailed records of individual contributions, CoTrace supports more accurate and equitable decision-making in contexts including performance evaluation, grade assignment, and recognition of intellectual labor. The tool reduces reliance on subjective assessments or incomplete information when measuring contribution to group work.
+
 ## Ethical Implications
 
-This document requires that you discuss the ethical implications of your
-work -- no matter how benign you consider the outcome of your project.
-As several major studies of ethical issues in computer science assert:
-_no project is completely value-neutral_.
+The development of tools that measure and quantify collaboration raises important ethical considerations regarding fairness, transparency, and accountability in group work assessment. CoTrace addresses several key ethical dimensions including equitable contribution measurement, prevention of misuse for surveillance, algorithmic fairness in contribution scoring, and data governance.
 
-To assist you in elaborating on these issues, the following areas are
-topics you might consider addressing. You do not need to address all of
-them.
+### Fair Assessment and Accountability
 
-* Information Privacy
-* Information Accuracy (e.g. can contain reliability)
-* Potential Misuse (e.g. computer crime, unintended consequences)
-* Second- or Third-Party Risk (e.g. safety)
-* Data Collection Issues (e.g. issues inherent in collecting data)
-* Algorithmic or Data Bias
-* Potential Power Difference / Social Imbalance / Issues in Equity
+One primary ethical consideration is ensuring that CoTrace contributes to fair and equitable assessment of collaborative contributions rather than enabling biased decision-making. The tool is designed with the understanding that contribution measurement should be transparent and explainable. All contribution scores are accompanied by clear explanations of the methodology used, enabling human reviewers to validate or contextualize algorithmic assessments. The tool intentionally avoids assigning binary judgments ("good contributor" vs "poor contributor") and instead provides granular data that allows human evaluators to apply context and nuance to decision-making.
 
-In addition, reflect on ways that the above harms can be or are
-mitigated by your work.
+Furthermore, CoTrace acknowledges that different forms of contribution carry different significance in different contexts. The tool supports multiple contribution metrics rather than reducing collaboration to a single score. This allows users to understand the full range of how individuals contributed and to weight different types of contributions appropriately for their specific context.
+
+### Prevention of Misuse for Surveillance
+
+As with any tool that provides visibility into work behavior, CoTrace must address the potential for misuse as a surveillance mechanism. The tool is designed to ensure it remains transparent to all collaborators. Users can see that CoTrace is analyzing their document, and the extension's operation is visible rather than hidden. Documentation clearly specifies intended use cases and discourage surveillance-oriented applications.
+
+Additionally, CoTrace is designed to work within shared documents where all parties have editing access, preventing scenarios where one person monitors others' work without their knowledge. The tool does not enable tracking of user activity outside the shared document or monitoring of individuals who have not consented to measurement.
+
+### Algorithmic Fairness in Contribution Measurement
+
+CoTrace implements contribution scoring algorithms, which creates a responsibility to ensure these algorithms do not inadvertently disadvantage specific groups or individuals. The tool is designed to avoid biases that might favor certain types of contributions over others—for example, avoiding systems that privilege quantity of edits over quality of impact, or that disadvantage contributors with different work styles.
+
+The project acknowledges that what constitutes valuable contribution varies across contexts. In academic writing, theoretical framing may be more significant than formatting work, while in technical documentation, clear organization may be as important as content creation. CoTrace supports contextualized assessment rather than imposing a single definition of valuable contribution.
+
+### Data Governance and Privacy
+
+While CoTrace measures collaboration patterns rather than tracking privacy-sensitive data, the tool still handles sensitive information including work history, authorship attribution, and potentially confidential document content. The project commits to handling this data according to established privacy principles, including data minimization, purpose limitation, and user consent.
+
+## Research Contributions
+
+This project contributes to the field of collaborative work systems and human-computer interaction in several ways. First, it demonstrates that automated summarization of collaborative document changes is feasible and useful for non-technical users, addressing a gap in existing version control tools. Second, it provides an implemented system for measuring individual contributions to collaborative work, contributing empirical evidence about what metrics are meaningful and practical. Finally, by open-sourcing CoTrace and its algorithms, the project enables future research into contribution detection, attribution systems, and fair assessment mechanisms for collaborative work.
