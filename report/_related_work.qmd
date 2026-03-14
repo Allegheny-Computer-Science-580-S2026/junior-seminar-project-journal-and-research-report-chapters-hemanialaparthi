@@ -1,16 +1,57 @@
 # Related work
 
-This chapter includes a broad and detailed review of relevant existing
-work. The literature review should provide background and context for
-your junior seminar research project. The subsections may be organized
-in whatever manner seems best suited to the material-- chronological, or
-by topic, or according to some other criteria (e.g., primary versus
-secondary resources).
+Since collaborative document editing has become standard practice in academic and professional settings, understanding how teams work together and measuring individual contributions has grown increasingly important. However, tools that help users quickly comprehend document evolution and fairly measure contribution impact remain limited. This gap presents a valuable opportunity for new research and innovation in collaborative work systems. As teams increasingly rely on asynchronous collaboration through platforms like Google Workspace, the need for automated change summarization and contribution measurement becomes critical. Additionally, understanding the current landscape of collaboration analytics tools and their limitations provides important context for how CoTrace addresses unmet needs in the ecosystem.
 
-**Note for Junior Seminar**: This chapter should be approximately 5-7
-pages in length. Aim for 10-15 high-quality sources that directly relate
-to your project. Focus on synthesizing the literature to show how your
-work fits into the existing research landscape.
+Challenges in collaborative work can be broadly categorized into two problems: understanding document evolution and measuring contribution fairness. Understanding document evolution refers to the difficulty of comprehending what changed in a document, why it changed, and how those changes shaped the final product. Measuring contribution fairness refers to the challenge of objectively assessing individual contributions to collaborative work without relying on incomplete information or subjective judgment. This paper focuses primarily on these two interconnected challenges and how semantic change summarization combined with contribution detection can address them in ways existing tools do not
 
-If ethical issues are central to this work, you should also address
-historical and contemporary issues or efforts made to address them.
+## Rise of Collaborative Work and Remote Teams
+
+Since the widespread adoption of cloud-based document editors following Google Docs' introduction in 2006, collaborative writing and asynchronous document editing have become fundamental to how teams work. Early collaborative systems focused on real-time co-editing capabilities, allowing multiple users to edit simultaneously and see each other's cursors [@johnson2003towards]. This represented a significant advancement over email-based document sharing, which created version confusion and made coordination difficult.
+
+The COVID-19 pandemic further accelerated the adoption of cloud-based collaborative tools, with organizations forced to shift to remote and hybrid work models. Google Workspace, Microsoft 365, and similar platforms became essential infrastructure for teams across academia, business, and creative industries. However, as teams increasingly worked asynchronously across time zones, a new problem emerged: understanding document evolution and measuring individual contributions became significantly more difficult. Unlike real-time co-editing where users can observe changes as they happen, asynchronous collaboration generates extensive version histories that are difficult to synthesize and understand.
+
+Research in computer-supported cooperative work (CSCW) has extensively studied how collaborative tools affect group dynamics and productivity [@polancic2013experimental]. A key finding is that awareness of others' work and understanding what collaborators are doing, why they are doing it, and what they have accomplished significantly improves coordination in distributed teams. However, most awareness mechanisms focus on real-time presence and activity rather than historical understanding of work evolution and contribution patterns.
+
+## Version Control and Change Tracking Systems
+
+Version control systems represent a mature field with well-established tools and methodologies. Git, the dominant version control system, provides granular tracking of source code changes through commits, branches, and detailed diff information [@git]. While Git excels at managing code repositories and enabling collaboration among developers, it requires technical expertise to interpret diffs and understand how changes relate to broader project goals. The learning curve for non-technical users remains steep, limiting its applicability in domains like academic writing, business documentation, and creative collaboration.
+
+Google Docs and similar cloud-based collaborative editors provide version history functionality that is accessible to non-technical users. These systems automatically save versions and allow users to view changes over time. However, their version history interfaces present information chronologically and show only basic metadata about who edited when. They lack semantic understanding of changes. For example, users cannot easily ask questions like "what was the main point of this version?" or "which edits addressed the peer review feedback?" without manually reading through edits. The accessibility advantage of cloud-based editors comes at the cost of analytical depth.
+
+Microsoft Word's track changes feature and similar tools within Google Workspace provide comment-based collaboration but focus on presentation of raw changes rather than synthesis or impact measurement. These tools document that changes occurred but do not explain their significance or contribution impact. Recent browser extensions like Grammarly have added writing analysis features, but they focus on grammar and style rather than change summarization or contribution measurement [@grammarly].
+
+## Contribution Measurement and Attribution
+
+Research into contribution measurement has primarily focused on software engineering contexts. Tools and frameworks exist for measuring code contributions, including metrics based on commit counts, lines of code changed, and issue resolution [@gitmetrics]. However, these metrics are known to be imperfect proxies for actual contribution value and can be misleading when applied without context. A single critical bug fix may be worth more than thousands of lines of code that are never used.
+
+## Automated Change Summarization and Natural Language Processing
+
+Recent advances in large language models have enabled more sophisticated approaches to understanding and summarizing code and document changes. There has been research on using neural networks to automatically generate commit messages summarizing code changes [@jiang2017automatically]. Their work demonstrated that models could learn to summarize diffs in semantically meaningful ways, providing a foundation for automated change understanding.
+
+Building on this work, subsequent research has explored using large language models for understanding broader development practices. The emergence of transformer-based models like GPT have made it possible to analyze text at scale and generate coherent summaries of complex changes [@hossain2025transformers]. However, most existing work focuses on source code rather than general document collaboration.
+
+In the document domain, research on automatic text summarization has made significant progress. Multi-document summarization and update summarization have been studied, but application to collaborative document editing remains limited. The specific challenge of understanding semantic changes in documents for example, where content is reordered, rewritten, or synthesized presents unique difficulties beyond traditional abstractive summarization [@supriyono2024survey]. Existing summarization approaches typically assume independent documents rather than versions of the same document with cumulative changes.
+
+## Fairness and Ethical Considerations in Work Measurement
+
+The history of performance measurement and evaluation reveals important lessons for contribution measurement systems.  While systematic measurement can enable fairer assessment, it can also create perverse incentives, encourage gaming of metrics, and reduce human work to oversimplified quantification [@manheim2023building].
+
+In modern contexts, the rise of algorithmic management and surveillance in workplaces has raised ethical concerns about worker autonomy and privacy [@manheim2023building]. While CoTrace aims to improve fairness in contribution assessment, it must be designed to avoid becoming a surveillance tool that enables excessive monitoring or undermines worker autonomy. Transparency in algorithmic decision-making is increasingly recognized as important for fairness and user trust.
+
+Contemporary efforts to address fairness in assessment include developing "altmetrics" that provide multiple perspectives on impact rather than single scores [@priem-altmetrics], and implementing transparent rubrics that make assessment criteria explicit [@wilson-transparent-rubrics]. These approaches align with CoTrace's design philosophy of providing multiple contribution metrics rather than reducing collaboration to a single score.
+
+## Academic Integrity and Writing Process Analysis Tools
+
+Recent tools have emerged to assist educators in understanding student writing processes and detecting anomalies that may indicate plagiarism or AI generation. Revision History, widely adopted in educational contexts with over 200,000 users, tracks editing sessions, detects copy/paste events, and identifies unusual writing patterns such as sudden large text additions or inconsistent editing velocities [@revisionhistory]. These tools focus on flagging suspicious patterns to prompt teacher investigation.
+
+While Revision History effectively identifies unusual patterns, it operates at the level of *detection* rather than *understanding*. It can flag that a large block of text was added suddenly, but it does not explain what that text is, how it relates to previous content, or whether it represents substantive contribution. Similarly, while it tracks edit counts, it does not measure the significance of individual contributions—a single critical edit is treated the same as a minor typo fix. CoTrace builds on this foundation by shifting from anomaly detection to semantic understanding of changes and contribution measurement.
+
+## Gap and Contribution
+
+The existing literature reveals a clear gap at the intersection of collaborative document editing, automated change understanding, and fair contribution measurement. While mature work exists in each individual area, and emerging tools address academic integrity concerns, no integrated system specifically addresses the problem of understanding collaborative document evolution and measuring fair contribution in ways that reduce manual analysis burden while promoting equitable assessment.
+
+Existing tools fall into distinct categories: (1) version control systems provide complete but raw information requiring manual synthesis; (2) writing process analysis tools focus on detecting anomalies rather than understanding meaning; and (3) contribution measurement research emphasizes software engineering contexts rather than general document collaboration.
+
+CoTrace fills this gap by specifically targeting the collaboration fairness and change comprehension problem. Rather than asking "Is this work authentic?" (the concern of academic integrity tools), CoTrace asks "What actually changed in this document, and who contributed what?" The system combines insights from version control, natural language processing, contribution measurement research, and fairness-aware algorithmic design into a unified system tailored to the Google Workspace ecosystem and designed for both educational and team collaboration contexts.
+
+This project contributes by: (1) demonstrating that automated, semantically meaningful summarization of document changes is feasible and valuable for non-technical users, reducing the time and effort required to understand document evolution; (2) providing an implemented system for detecting and measuring individual contributions to collaborative documents in ways that highlight substantive impact rather than edit counts; and (3) grounding contribution measurement in fairness-aware design principles that prioritize transparency, multiple metrics, and user understanding over simple quantification which are principles that apply equally to classroom group projects and distributed team work.
