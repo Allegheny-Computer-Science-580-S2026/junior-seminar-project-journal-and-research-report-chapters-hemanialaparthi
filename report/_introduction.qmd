@@ -18,6 +18,11 @@ This problem manifests across multiple domains. In academic settings, collaborat
 
 The significance of this challenge extends beyond convenience. Accurate measurement of individual contributions affects real-world outcomes including performance evaluations, grade assignment in collaborative projects, promotion decisions in corporations, and recognition of intellectual labor. When contribution measurement relies on incomplete information or subjective assessment, the resulting decisions may be biased, unfair, or inaccurate. CoTrace addresses this by providing objective, automated measurement of contribution patterns in collaborative documents.
 
+### Labor Productivity and Accountability
+
+Beyond the challenges of understanding document evolution, there is a broader motivation related to labor productivity. In collaborative environments, teams often struggle to maintain accountability and ensure that work is distributed equitably. When contribution patterns are opaque, it can lead to situations where some team members contribute significantly while others contribute minimally, yet all receive equal credit. This lack of visibility affects those responsible for evaluating performance, as they lack objective data to assess individual impact, creating potential for unfair assessment.
+
+
 ### Current Limitations of Existing Solutions
 
 Version control and change tracking tools address different aspects of the collaboration problem but fail to solve the contribution measurement challenge comprehensively. Google Docs, for example, provides version history but presents changes chronologically and requires manual synthesis to extract meaning. GitHub excels at code change tracking but is optimized for technical workflows and includes steep learning curves for non-developers. Spreadsheet tools like Google Sheets lack sophisticated change tracking altogether. None of these systems provide semantic summarization of changes or automated contribution scoring designed for non-technical users.
@@ -48,7 +53,7 @@ CoTrace represents the first integrated system designed specifically to address 
 
 The primary objectives of CoTrace are to automate version history summarization, detect and measure individual contributions, provide transparent collaboration analytics, and enable fair assessment of collaborative work.
 
-**First, automate version history summarization.** CoTrace generates concise, semantic summaries of document changes that capture what evolved between versions without requiring users to manually review edit histories. Rather than presenting raw diffs or chronological lists, the tool synthesizes changes into human-readable narratives that highlight the significance and nature of modifications.
+**First, automate version history summarization.** CoTrace generates concise, semantic summaries of document changes that capture what evolved between versions without requiring users to manually review edit histories. Rather than presenting raw diffs or chronological lists, the tool uses NLP and semantic analysis to synthesize changes into human-readable narratives. For example, recognizing that multiple edits collectively 'addressed peer review feedback' rather than listing each edit separately.
 
 **Second, detect and measure individual contributions.** CoTrace attributes edits to specific contributors and implements algorithms to measure the significance of individual contributions. This goes beyond simple edit counts to assess the substantive impact of changes, including whether edits resolved key issues, introduced errors, or synthesized feedback into coherent document structure.
 
