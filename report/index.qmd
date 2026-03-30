@@ -10,7 +10,7 @@ format:
 natbiboptions: numbers
 # EDIT AT YOUR OWN PERIL #
 
-title: CollabTrace - A Cross-Platform System for Semantic Summarization of Collaborative Changes
+title: cotrace - Semantic Analysis and Summarization of Collaborative Document Revisions
 
 firstreader: Professor Gregory M. Kapfhammer
 secondreader: Student Second Reader
