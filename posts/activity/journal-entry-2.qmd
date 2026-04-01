@@ -14,24 +14,70 @@ Your goal is to make it easy for someone else to install and use your work.
 
 ### Installation Instructions
 
-- What are the system requirements?
-- What dependencies need to be installed?
-- What are the step-by-step installation instructions?
-- How can someone verify that the installation was successful?
+**System Requirements:**
+- Node.js 14+ (for backend server)
+- Chrome browser (for extension)
+- npm or yarn package manager
+
+**Steps:**
+
+1. Clone the repository and navigate to the project directory
+2. **Backend Setup:**
+   ```bash
+   cd cotrace-backend
+   npm install
+   cp .env.example .env  # Configure your environment variables
+   npm start  # Server runs on http://localhost:3000
+   ```
+3. **Chrome Extension Setup:**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top right)
+   - Click "Load unpacked" and select the cotrace project folder
+   - The extension icon should appear in your toolbar
+
+4. **Verification:**
+   - Backend: Open http://localhost:3000 in your browser
+   - Extension: Click the cotrace icon in Chrome to see the popup
 
 ### Usage Instructions
 
-- How do you run your prototype?
-- What are the main features or capabilities?
-- What are some example use cases?
-- Are there any configuration options or settings?
+**Running the Prototype:**
+- Start the backend server: `npm start` (from cotrace-backend folder)
+- The Chrome extension automatically connects to the backend
+
+**Main Features:**
+- Real-time tracing and monitoring in the active tab
+- Popup interface for quick access and configuration
+- Backend API for data storage and analysis
+
+**Example Use Cases:**
+- Track user interactions on web pages
+- Monitor performance metrics
+- Collect analytics data for research
+
+**Configuration:**
+- Edit `.env` file in cotrace-backend for server settings
+- Modify popup UI in `popup2.html`
+
 
 ### Technical Details
 
-- What technologies or frameworks did you use?
-- Why did you choose these particular tools?
-- What are the key components or modules?
-- How do the different parts work together?
+**Technologies Used:**
+- **Frontend:** Chrome Extension API, HTML/CSS/JavaScript
+- **Backend:** Node.js with Express.js
+- **Architecture:** Client-server model with content scripts
 
-Remember to include code snippets, screenshots, or diagrams where appropriate to
-make your instructions clear and easy to follow.
+**Why These Tools:**
+- Chrome Extension API provides direct DOM access
+- Node.js backend handles data persistence and analysis
+- Separation of concerns (frontend/backend)
+
+**Key Components:**
+- `manifest.json` - Extension configuration and permissions
+- `content.js` - Injects tracing logic into web pages
+- `background.js` - Manages extension lifecycle
+- `popup.html/popup2.html` - User interface
+- `server.js` - Backend API server
+
+**How They Work Together:**
+Content scripts collect data → Send to popup → Backend stores/processes → Results displayed in extension UI
