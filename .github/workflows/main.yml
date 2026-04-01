@@ -30,8 +30,9 @@ jobs:
           sudo apt install --only-upgrade python3-pip
           sudo python -m pip install gatorgrade --ignore-installed PyYAML
           sudo python -m pip install yq
+          sudo apt-get install chromium-browser
       - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+        uses: quarto-dev/quarto-actions/setup@v2.2.0
         if: always()
       - name: Create LaTeX enviroment
         run: |
@@ -42,6 +43,7 @@ jobs:
         if: always()
       - name: Build with Quarto
         run: |
+          quarto install chromium
           quarto render
         if: always()
       - name: Upload artifact
