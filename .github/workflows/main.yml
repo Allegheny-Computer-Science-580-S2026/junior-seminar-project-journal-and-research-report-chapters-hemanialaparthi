@@ -44,6 +44,7 @@ jobs:
       - name: Build with Quarto
         run: |
           quarto install chromium
+          quarto install chrome-headless-shell
           quarto render
         if: always()
       - name: Upload artifact
