@@ -27,9 +27,12 @@ jobs:
       - name: Create LaTeX enviroment
         run: |
           quarto install tinytex
+          sudo apt-get install chromium-browser
         if: always()
       - name: Render the PDF
         run: |
+          quarto install chromium
+          quarto install chrome-headless-shell
           quarto render report/index.qmd --to allegheny-cis-pdf
           cp _site/report/index.pdf _site/report/JuniorSeminarReport.pdf
         if: always()
