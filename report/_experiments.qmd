@@ -125,7 +125,8 @@ Finally, this experiment measures latency under normal operating conditions with
 
 Table 1 presents the mean and standard deviation for each latency metric at each document size level. The data reveal several notable patterns:
 
-**Table 1: Latency Metrics by Document Size (Mean ± SD, n=10 per size)**
+:
+Latency Metrics by Document Size (Mean ± SD, n=10 per size) {#tbl-latency}
 
 | Content Size (chars) | Server TTFB (ms) | Server Total (ms) | Client Total (ms) |
 |:---------------------|:-----------------|:------------------|:------------------|
@@ -148,7 +149,8 @@ Client-side total time shows high variability (standard deviations of 1,000-2,00
 
 To quantify the strength of relationships between document size and latency metrics, Pearson correlation coefficients were computed using all 40 data points (pooled across size levels):
 
-**Table 2: Correlation Between Content Size and Latency Metrics (n=40)**
+:
+Correlation Between Content Size and Latency Metrics (n=40) {#tbl-correlation}
 
 | Latency Metric        | Correlation with Size | Interpretation    |
 |:----------------------|:---------------------:|:------------------|
