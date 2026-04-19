@@ -1,54 +1,97 @@
 ---
-title: "Journal Entry 5: Chapters 3 and 4 Reflections"
+title: "Journal Entry 5: Chapter 3 Reflection - Methodology"
 date: "2026-04-01"
-categories: [reflection, writing, methodology, results]
-description: "Reflections on writing the Methodology and Results chapters"
+categories: [reflection, writing, methodology]
+description: "Reflections on writing the Methodology chapter"
 ---
 
-![Methodology and results reflection](../thumbnail.jpg)
+![Methodology reflection](../thumbnail.jpg)
 
 ## Reflections on Writing Chapters 3 and 4
-
-In this journal entry, reflect on your experience writing the methodology and
-results chapters of your junior seminar research report.
 
 ### Chapter 3: Methodology
 
 #### Writing Process
 
-- How did you decide which implementation details to include?
-- What was challenging about describing your research methods?
-- How did you use diagrams or code snippets to enhance your explanations?
-- What technical depth was appropriate for your audience?
+Writing the methodology chapter required balancing technical depth with accessibility. I made explicit decisions about what implementation details to include at each level:
 
-#### Content Reflections
+**Architectural Level:** I included system diagrams showing the three-layer architecture (Chrome Extension frontend, Node.js backend, external APIs). This level was essential for helping readers understand the overall design without requiring them to read code.
 
-- Does your methodology chapter clearly explain your approach?
-- Did you adequately describe the infrastructure and tools you used?
-- How well did you address ethical considerations in your methods?
-- Can you draw a diagram or formally outline an algorithm from your implementation?
-- What aspects of your implementation are you most proud of? Why?
+**Algorithm Level:** I described the three-phase change analysis algorithm (content retrieval, diff generation, semantic summarization) with mathematical notation. This conveyed the rigor of the approach while remaining understandable to non-specialists.
 
-### Chapter 4: Experimental Results
+**Implementation Level:** I included specific technology choices (Manifest v3, Express.js, Claude API) with justification for each choice. Rather than presenting implementation as arbitrary decisions, I explained the constraints and trade-offs that led to each choice.
 
-#### Conducting and Reporting Experiments
+#### Challenges and Solutions
 
-- How did you design your experiments to test your research questions?
-- What metrics did you use to evaluate your work?
-- What challenges did you face in collecting and analyzing data?
-- How did you decide which results to include in your report?
+The most significant challenge was deciding what technical depth was appropriate for a general audience. I addressed this by:
+- Creating multiple forms of explanation (architectural diagrams, pseudocode, detailed prose)
+- Providing context for why certain technologies were chosen
+- Explaining both the benefits and trade-offs of the local backend approach
 
-#### Content Reflections
+When describing the backend's interaction with Google Drive API, I initially included too much raw API documentation. Through revision, I focused on the conceptual flow (pagination, content fetching, diff generation) rather than exact API parameters.
 
-- Do your results effectively demonstrate the value of your work?
-- How did you use visualizations to present your findings?
-- Did you discuss both successes and limitations of your approach?
-- What were the most interesting or unexpected results?
-- How well did you address threats to validity of the experiments?
+#### Key Contributions in Methodology
 
-### Overall Reflections
+I'm particularly proud of:
+1. **The local backend architecture decision and its justification** - This reflects sophisticated systems thinking about privacy and security
+2. **The three-phase algorithm description** - It's both technically rigorous and conceptually clear
+3. **The explicit discussion of trade-offs** - Honest about the friction of requiring manual backend startup
 
-- How do these chapters demonstrate the contribution of your research?
-- What did you learn about the scientific method through this process?
-- What revisions do you plan to make based on feedback?
-- How has writing these chapters changed your perspective on your research?
+#### Content Quality
+
+The methodology chapter demonstrates that I can explain complex technical systems in ways that serve different readers. Non-technical readers can understand the overall flow without knowing Express.js; technical readers can see the implementation sophistication. The chapter includes sufficient detail for reproducibility while remaining accessible.
+
+Key additions based on feedback:
+- Hardware and software requirements sections
+- Performance characteristics measured on M1 MacBook Pro
+- Evaluation metrics covering accuracy, user experience, performance, and robustness
+- Explicit limitations of the evaluation approach
+
+This chapter essentially explains "how science happens" in my project—the disciplined approach to system design, the explicit choices made, and the reasoning behind those choices.
+
+### Chapter 4: Experiments and Evaluation
+
+#### Designing Meaningful Experiments
+
+Writing the experiments chapter required a fundamentally different mindset than methodology. While methodology explained what I built, experiments had to answer: "What did I learn by actually measuring the system?" This shift from design rationale to empirical validation was challenging but essential for demonstrating that CoTrace's architecture actually delivers on its promises.
+
+The central research question—how document size impacts latency in semantic summarization—emerged from practical concern rather than academic interest. When users work with large Google Docs, will they experience unacceptable delays? I needed to measure this rigorously rather than speculating.
+
+#### Instrumentation and Measurement Design
+
+The most intellectually interesting aspect of the experiments chapter was designing comprehensive instrumentation without disrupting the system's normal operation. I faced a classic measurement problem: adding measurement code introduces overhead and can alter the behavior you're trying to measure.
+
+My solution was to instrument at multiple levels:
+- **Server-side metrics** in Node.js to capture backend processing time at each pipeline stage
+- **Client-side metrics** using the Performance API to capture user-perceived latency  
+- **Combined analysis** that correlates these perspectives
+
+This dual measurement approach revealed something important: client-side latency doesn't directly correlate with document size because UI rendering effects (specifically, the typing animation that adds ~10ms per response character) dominates the measurement. The true performance insights only became visible in the server-side metrics.
+
+#### Experimental Methodology Challenges
+
+Creating realistic test documents for controlled experiments proved surprisingly difficult. I couldn't use random text—the LLM would process semantically meaningless content and produce anomalous results. Instead, I wrote coherent technical documentation of increasing length, creating multiple revisions in Google Docs to match how real users would work.
+
+The controlled repetition requirement (10 trials per document size, identical query each time) felt artificial at first. But it ensured that response generation complexity remained constant, isolating the effect of input size. This distinction between what you want to measure (input size effect) and what you actually control (revision count, query text) is fundamental to good experimental design.
+
+#### Data Analysis and Interpretation
+
+The data revealed a threshold effect rather than linear scaling. Processing time remained stable for documents up to ~30,000 characters, then increased notably at larger sizes. This pattern is more practically useful than knowing there's a linear relationship—it tells users "you get predictable performance until you exceed approximately 30K characters of content, then expect increased latency."
+
+The high variability in client-side metrics initially seemed like experimental noise. But recognizing that this variability reflects real network and API conditions made me appreciate the importance of multiple trials. With just one or two samples, I might have misinterpreted random variation as a meaningful trend.
+
+#### Methodological Transparency
+
+I became convinced that explicitly discussing methodological limitations strengthens rather than weakens research. Discussing why I used character count rather than token count, why 10 trials per condition was reasonable despite not being 30 or 100, and why client-side metrics might not generalize to high-load scenarios—these discussions make the results more trustworthy and usable.
+
+#### Content and Communication Quality
+
+The experiments chapter demonstrates that I can translate empirical work into clear narrative. The chapter structure flows from research question through experimental design to results to interpretation. Readers who care about raw numbers get tables; readers who want visual patterns get figures; readers who need methodological rigor get detailed explanations of how every measurement was taken.
+
+Key reflections on the chapter:
+1. **Reproducibility focus** - The detailed instrumentation explanation allows other researchers to replicate or extend this work
+2. **Honest uncertainty** - Acknowledging what the data *doesn't* show is as important as what it does
+3. **Practical insights over mathematical elegance** - The threshold effect finding is more useful than correlation coefficients alone
+4. **Multiple measurement perspectives** - Server-side and client-side latencies tell different stories; both are valid
+
+This chapter shows that I understand how to design experiments that answer real questions, collect data systematically, and interpret results thoughtfully. The work demonstrates scientific rigor applied to a systems project.
