@@ -7,77 +7,148 @@ description: "How do you install and use your research prototype?"
 
 ![Research prototype](../thumbnail.jpg)
 
-## How do you install and use your research prototype?
+## How do you install and use CoTrace?
 
-In this journal entry, provide clear documentation for your research prototype.
-Your goal is to make it easy for someone else to install and use your work.
+CoTrace is a browser extension and backend system for summarizing collaborative document changes and measuring individual contributions. This journal entry provides installation and usage documentation.
 
 ### Installation Instructions
 
 **System Requirements:**
-- Node.js 14+ (for backend server)
-- Chrome browser (for extension)
+- Node.js 16.0.0+ (tested on Node 18.x and 20.x)
+- Google Chrome/Chromium 88+ (for Manifest v3 support)
+- macOS 10.15+, Windows 10+, or Linux (Ubuntu 18.04+)
 - npm or yarn package manager
+- Google Account with Drive access
+- Anthropic Claude API key
 
-**Steps:**
+**Backend Setup:**
+```bash
+# Clone and navigate to backend directory
+cd cotrace/cotrace-backend
 
-1. Clone the repository and navigate to the project directory
-2. **Backend Setup:**
-   ```bash
-   cd cotrace-backend
-   npm install
-   cp .env.example .env  # Configure your environment variables
-   npm start  # Server runs on http://localhost:3000
-   ```
-3. **Chrome Extension Setup:**
-   - Open Chrome and go to `chrome://extensions/`
-   - Enable "Developer mode" (toggle in top right)
-   - Click "Load unpacked" and select the cotrace project folder
-   - The extension icon should appear in your toolbar
+# Install dependencies
+npm install
 
-4. **Verification:**
-   - Backend: Open http://localhost:3000 in your browser
-   - Extension: Click the cotrace icon in Chrome to see the popup
+# Configure environment variables
+cp .env.example .env
+# Edit .env and add your CLAUDE_API_KEY
+
+# Start the backend server
+npm start
+# Server will run on http://localhost:3000
+```
+
+**Chrome Extension Setup:**
+1. Clone the cotrace repository
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode" (toggle in top right corner)
+4. Click "Load unpacked"
+5. Select the `cotrace` folder (the root directory)
+6. The CoTrace icon should appear in your Chrome toolbar
+
+**Verification:**
+- Backend: Open http://localhost:3000 in your browser—you should see "CoTrace backend running"
+- Extension: Click the CoTrace icon in your toolbar to open the popup interface
 
 ### Usage Instructions
 
-**Running the Prototype:**
-- Start the backend server: `npm start` (from cotrace-backend folder)
-- The Chrome extension automatically connects to the backend
+**Basic Workflow:**
 
-**Main Features:**
-- Real-time tracing and monitoring in the active tab
-- Popup interface for quick access and configuration
-- Backend API for data storage and analysis
+1. **Open a Google Workspace Document**
+   - Open any Google Doc, Sheet, or Slide in Chrome
+   - CoTrace automatically detects the file
 
-**Example Use Cases:**
-- Track user interactions on web pages
-- Monitor performance metrics
-- Collect analytics data for research
+2. **Authenticate**
+   - Click the CoTrace extension icon
+   - Click "Sign in with Google"
+   - Grant the extension access to Google Drive (read-only)
 
-**Configuration:**
-- Edit `.env` file in cotrace-backend for server settings
-- Modify popup UI in `popup2.html`
+3. **Analyze Changes**
+   - The Chat tab allows natural language queries about what changed (e.g., "What did Sarah change?")
+   - The Changes tab lets you compare any two specific versions
+   - The Contributions tab shows per-author contribution statistics
 
+4. **Review Results**
+   - Summaries are displayed in a chat-like interface
+   - Diffs show line-by-line changes with additions (green) and deletions (red)
+   - Chat history persists across browser sessions
 
-### Technical Details
+**Key Features:**
 
-**Technologies Used:**
-- **Frontend:** Chrome Extension API, HTML/CSS/JavaScript
-- **Backend:** Node.js with Express.js
-- **Architecture:** Client-server model with content scripts
+- **Chat Interface** - Ask questions like "What were the major changes in the last revision?" and get semantic summaries
+- **Version Comparison** - Select any two versions and see a unified diff plus AI-powered analysis
+- **Contribution Tracking** - View who contributed what and get statistics on contribution patterns
+- **Persistent History** - All chat conversations are saved locally in Chrome Storage
 
-**Why These Tools:**
-- Chrome Extension API provides direct DOM access
-- Node.js backend handles data persistence and analysis
-- Separation of concerns (frontend/backend)
+### Technical Architecture
 
-**Key Components:**
-- `manifest.json` - Extension configuration and permissions
-- `content.js` - Injects tracing logic into web pages
-- `background.js` - Manages extension lifecycle
-- `popup.html/popup2.html` - User interface
-- `server.js` - Backend API server
+**Frontend (Chrome Extension):**
+- `content.js` - Detects active file and injects extension functionality
+- `background-new.js` - Coordinates authentication, file detection, and API calls
+- `popup2-new.html` & associated modules - User interface with three tabs (chat, changes, contributions)
+- `src/popup/` - Individual modules for each tab's functionality
+- `src/background/` - Authentication, Google API integration, file detection
 
-**How They Work Together:**
-Content scripts collect data → Send to popup → Backend stores/processes → Results displayed in extension UI
+**Backend (Node.js):**
+- `server.js` - Express.js server handling API requests
+- POST `/query-changes` - Streaming endpoint for natural language queries
+- POST `/compare-versions` - Endpoint for comparing two specific revisions
+- Google Drive API integration for fetching revision content
+- Claude API integration for semantic summarization
+
+**Data Flow:**
+1. Extension detects active Google Doc → Stores file ID in Chrome Storage
+2. User enters query → Sent to backend server at `http://localhost:3000`
+3. Backend fetches last 20 revisions from Google Drive API
+4. Backend generates unified diffs between consecutive revisions
+5. Claude API analyzes diffs and generates semantic summaries
+6. Results stream back to extension popup → Rendered as formatted markdown
+
+**Why This Architecture:**
+
+- **Local backend** keeps all authentication tokens and document content on the user's machine
+- **Streaming responses** provide real-time feedback to users as Claude generates summaries
+- **Chrome Storage** persistence ensures chat history survives browser restarts
+- **Asynchronous processing** means users can close the popup and revisit results later
+
+### Configuration
+
+**Backend Configuration (.env file):**
+```
+CLAUDE_API_KEY=sk-ant-your-actual-key-here
+PORT=3000  # Optional, defaults to 3000
+```
+
+**Chrome Extension Configuration:**
+- All settings are managed through Chrome Storage
+- No additional configuration files needed
+- Permissions are explicitly declared in `manifest.json`
+
+### Performance Notes
+
+- First query may take 4-8 seconds while backend fetches revisions
+- Subsequent queries on the same document are faster
+- Very large documents (50,000+ words) may take longer due to diff generation
+- Chrome Storage persists up to ~10MB of chat history per extension instance
+
+### Troubleshooting
+
+**Backend won't start:**
+- Ensure Node.js 16+ is installed: `node --version`
+- Check that port 3000 is available: `lsof -i :3000`
+- Verify CLAUDE_API_KEY is set in .env file
+
+**Extension won't load:**
+- Ensure you're loading the cotrace folder (not cotrace-backend)
+- Check that manifest.json exists in the root cotrace directory
+- Verify Chrome version is 88+
+
+**404 Error on queries:**
+- Verify backend is running: http://localhost:3000 should show "CoTrace backend running"
+- Check browser console for detailed error messages
+- Ensure you've authenticated with Google (click account icon in popup)
+
+**No revisions found:**
+- Only Google Docs, Sheets, and Slides are supported (not all file types)
+- Ensure you have read access to the document
+- Try refreshing the page to re-detect the file
