@@ -16,45 +16,64 @@ your junior seminar research report.
 
 #### Summarizing Your Research
 
-- How did you approach summarizing your research outcomes?
-- What were the key takeaways you wanted readers to understand?
-- How did you connect your conclusions back to your original research questions?
-- What was challenging about synthesizing all your work into a cohesive conclusion?
+Writing the conclusions required stepping back from the technical details to articulate what Cotrace actually demonstrates about AI-powered collaborative analysis. Rather than simply listing implemented features, I focused on connecting each capability to the core research problem: teams struggle to understand how collaborative documents evolve when faced with hundreds of revisions from multiple authors. The key takeaway I wanted readers to grasp was that semantic summarization using modern LLMs can meaningfully address this problem, but only in controlled contexts—production effectiveness remains to be demonstrated.
+
+I deliberately positioned Cotrace as a "strong proof of concept" rather than claiming it as a finished product. This framing acknowledges both the technical success of the implementation and the intellectual honesty that real-world validation is needed. I connected the work back to the original research goal by showing how each feature (revision analysis, diff generation, semantic summarization, error handling) directly contributes to making document change comprehensible.
+
+The most challenging part was synthesizing the performance testing data into meaningful conclusions. The latency numbers (2000ms TTFT, 4500-5200ms total) needed interpretation like what do these numbers mean for actual user experience? I realized these timings suggest Cotrace works well for moderately large documents but might need optimization for the largest collaborative documents. This led to concrete recommendations about caching and streaming strategies in future work.
 
 #### Reflecting on Results
 
-- How well did your research meet your initial objectives?
-- What unexpected outcomes or insights emerged from this project?
-- How did you address limitations or shortcomings in your work?
-- What did you learn about your research topic through this process?
+Cotrace exceeded my initial objectives. I set out to build a system that could automatically detect collaborative documents and generate semantic summaries of changes. The extension successfully does both. But the project evolved beyond these core goals—I didn't initially plan the contributions tracking feature or the persistent chat history, yet both emerged as natural extensions of the architecture and added meaningful value.
+
+The unexpected insight was how effective parallel API calls are for performance. Early prototypes fetched revision content sequentially and felt sluggish. Switching to `Promise.all()` for parallel requests produced dramatic latency improvements without significantly increasing complexity. This taught me that architectural decisions matter as much as algorithmic cleverness.
+
+One major limitation I had to confront was the lack of real-world user data. I could measure technical performance (latency, accuracy of diff generation) but not whether Cotrace actually improves how teams understand change. Testing with synthetic documents and personal Google Drive files is insufficient—I need actual collaborative teams using Cotrace in their normal workflows to validate effectiveness. Writing the conclusion forced me to honestly acknowledge this gap rather than overstating confidence.
+
+The project also revealed tensions between feature ambition and implementation scope. I wanted to include advanced collaboration features (conflict detection, predictive analytics) but realized these would require significantly more development. Accepting this constraint and clearly documenting it in future work sections felt more intellectually honest than delivering half-baked features.
+
+### Proposing Future Work
 
 ### Proposing Future Work
 
 #### Identifying Next Steps
 
-- How did you identify areas for future research?
-- What limitations of your current work suggest future directions?
-- What new questions emerged from your research?
-- How realistic and specific are your proposed future work items?
+The most critical future direction emerged from recognizing that technical success doesn't equal user success. Cotrace functions correctly and performs acceptably, but I have no evidence it actually helps teams. This insight drove me to prioritize user research at the beginning of the future work section—before enhancements to AI capabilities or platform support.
+
+From the technical limitations, several natural extensions became apparent. The revision limiting strategy (analyzing 20, storing all) works well but could be optimized. Implementing persistent caching of analyzed revisions would prevent redundant API calls. The support for only Google Docs/Sheets/Presentations, while a reasonable starting point, clearly excludes valuable use cases (Microsoft Office, Git repositories). These gaps practically suggest themselves as future directions.
+
+The ethical work also revealed important next steps. Privacy concerns became more concrete when I considered regulatory compliance—GDPR, HIPAA, and similar regulations matter for real organizational deployment. This led to specific recommendations about privacy impact assessments and data retention controls. I found that thinking through ethical implications systematically actually clarifies technical requirements (e.g., audit logs become a necessity, not a nice-to-have).
+
+The future work items are reasonably specific and grounded in real constraints. Rather than aspirational visions like "build AI that understands human intention perfectly," I proposed concrete steps: user studies with documented methodologies, fine-tuning approaches with clear success metrics, platform-specific integrations with known technical challenges. This specificity makes the work actionable for whoever might pursue it.
 
 #### Ethical Considerations
 
-- Did you address any unresolved ethical issues?
-- What new ethical concerns might future work introduce?
-- How might future research mitigate current limitations?
+Writing the ethical implications section forced me to confront uncomfortable truths about Cotrace. The system can easily become a surveillance tool if deployed without careful governance. A manager could use detailed change tracking to monitor individual productivity, creating exactly the kind of workplace anxiety that reduces collaboration. I initially considered this hypothetical, but recognizing it as a genuine risk led to more substantive ethical analysis.
+
+The most unresolved ethical issue is the assumption that semantic summarization is always helpful. What if Cotrace's abstractions hide important context? A team might rely on AI summaries instead of reading actual diffs, potentially missing crucial details. Conversely, teams might experience decision paralysis from too much change information. These tensions aren't resolvable at the design stage—they require empirical investigation.
+
+Future work in this area is essential. I proposed formal research into how AI collaboration tools affect team dynamics, ownership of work, and whether they genuinely support team members or primarily serve management interests. This requires interdisciplinary collaboration with organizational psychologists, ethicists, and workplace scholars. Without this investigation, Cotrace risks becoming just another tool that looks neutral but actually shifts power dynamics in subtle ways.
 
 ### Overall Reflections
 
-- How does this chapter provide closure for your research report?
-- What did you learn about the iterative nature of research?
-- How has writing this chapter affected your perspective on your project?
-- What are you most satisfied with in this final chapter?
-- If you could revise anything in this chapter, what would it be?
+Writing the conclusions chapter provided necessary closure but also revealed how much complexity exists in research work. Early in the project, I thought the conclusion would simply narrate accomplishments—"I built X, it works, here's what's next." The actual writing process revealed that intellectual honesty requires nuance. Cotrace technically succeeds but practically remains unvalidated. Both statements are true and important.
+
+The iterative nature of research became visceral during this chapter. Initial drafts were either too broad ("collaborative tools are important") or too narrow (purely technical details). The final version threads between problem context, technical specifics, and honest limitations. This required multiple revision cycles, reading similar work, and accepting that earlier drafts oversimplified.
+
+One thing I'm most satisfied with is how the ethical implications section emerged naturally from the technical work rather than feeling bolted on. Thinking through privacy, surveillance, and bias wasn't a separate ethical exercise—it emerged directly from considering how Cotrace would actually be used. This integration feels more authentic than treating ethics as an afterthought.
+
+If I could revise anything, I would have included user research earlier in the project. The conclusion prominently features lack of user validation, but this need became obvious only when writing conclusions. Having even informal user feedback would have strengthened claims about usability. The performance testing was valuable, but understanding whether actual team members find Cotrace helpful would have been more impactful.
+
+The writing process also clarified that research conclusions are not destination points but waypoints. My conclusion doesn't resolve the question of how to best support collaborative document understanding—it establishes that AI-powered semantic analysis is a promising approach worth deeper investigation with real users.
 
 ### Looking Forward
 
-- How might you actually pursue some of the future work you proposed?
-- What skills or knowledge would you need to develop?
-- How has this research project prepared you for future research endeavors?
-- What are the next steps you should take as your prepare for your senior project?
-- What advice would you give to the next group of students in the junior seminar course?
+The future work I proposed isn't merely speculative—several directions feel immediately pursuable. User research with 3-5 actual collaborative teams could happen this summer. I'd structure this as an observation combined with surveys, watching how teams actually use documents and what frustrates them about understanding changes. This could be a foundation for senior year work or a summer research opportunity.
+
+Expanding to Microsoft Office 365 and Git would require understanding their APIs and revision formats, but the architecture is modular enough that adding new platforms is manageable. Perhaps 2-3 new platforms could be supported before the senior project while maintaining code quality. Git integration is particularly interesting because code diffs are already structured—semantic analysis might reveal higher-level patterns (which functions changed, how did tests change relative to implementation) than raw diffs show.
+
+Pursuing this work will require developing skills in several areas. User research methodology is new territory—I'd need to learn interview techniques, IRB processes, and qualitative data analysis. Expanding platform support requires deeper API knowledge and careful attention to architectural patterns across different systems. The ethical research direction would require collaboration with faculty from other disciplines.
+
+As I prepare for the senior project, Cotrace provides a strong foundation. Rather than starting fresh, I will build on this work, making it more robust and production-ready. The senior project will focus on the user research and ethical investigation that this junior seminar work identified as crucial. This would create a natural progression from proof of concept (junior year) to validated tool (senior year).
+
+For the next cohort of junior seminar students, I'd offer this advice: don't aim for perfection in a one-year project. Cotrace is "good enough" as it demonstrates feasibility, but doesn't solve the problem completely. Use the conclusion to honestly identify what remains unknown and what your research enables future work to accomplish. This framing is actually more satisfying intellectually than overselling preliminary results. Also, think about ethics from the start, not the end. Consider how your tool could be misused, what populations might be harmed, and what oversight might prevent negative outcomes. Finally, conduct at least informal user research. Building something that technically works but doesn't actually help people is worse than having clear evidence of limitations.

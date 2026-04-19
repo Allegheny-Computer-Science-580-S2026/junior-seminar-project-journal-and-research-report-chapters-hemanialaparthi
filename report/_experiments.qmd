@@ -235,7 +235,6 @@ This initial performance characterization opens several avenues for future inves
 
 6. **Document versioning effects**: Analyzing how the age and frequency of revisions (e.g., documents with many small edits vs. few large edits) impact latency.
 
-
 ## Conclusion
 
 This chapter presented a systematic experimental evaluation of how document size impacts latency in CoTrace's semantic summarization pipeline. Through controlled experimentation with four document size levels and comprehensive instrumentation of both server-side and client-side latency components, the study provides empirical evidence of CoTrace's performance characteristics.
