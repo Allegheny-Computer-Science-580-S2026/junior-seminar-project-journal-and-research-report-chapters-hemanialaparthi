@@ -1,6 +1,6 @@
-# Method of approach
+# Method of Approach
 
-This chapter describes the technical implementation of cotrace, a Chrome Extension designed for semantic summarization of collaborative document changes. The system architecture, algorithms, technologies, and development methodologies used to build cotrace are detailed below.
+This chapter describes the technical implementation of CoTrace, a Chrome extension designed for semantic summarization of collaborative document changes. The system architecture, algorithms, technologies, and development methodologies used to build CoTrace are detailed below.
 
 **Implementation Repositories:**
 
@@ -12,7 +12,7 @@ Complete source code, installation instructions, and development documentation a
 
 ## System Architecture
 
-cotrace follows a client-server architecture pattern optimized for browser-based deployment and real-time collaboration analysis. The system consists of three primary layers: the Chrome Extension frontend, a local Node.js backend server, and a set of external APIs comprising Google Drive, Google OAuth 2.0, and the Anthropic Claude API. Each layer has a clearly scoped responsibility, and the separation between them reflects deliberate design decisions around security, performance, and extensibility.
+CoTrace follows a client-server architecture pattern optimized for browser-based deployment and real-time collaboration analysis. The system consists of three primary layers: the Chrome extension frontend, a local Node.js backend server, and a set of external APIs comprising Google Drive, Google OAuth 2.0, and the Anthropic Claude API. Each layer has a clearly scoped responsibility, and the separation between them reflects deliberate design decisions around security, performance, and extensibility.
 
 ### Architecture Overview
 
@@ -32,9 +32,9 @@ This end-to-end pipeline transforms raw version history, which Google exposes as
 
 ### Design Rationale: Local Backend vs. Hosted Service
 
-A central architectural decision was to run the backend server locally rather than hosting it as a cloud service. This choice directly addresses the privacy requirements of collaborative document analysis: users querying cotrace may be working with confidential documents, proprietary research, or commercially sensitive content. Routing document content through a third-party hosted server would introduce data retention risks and potential compliance concerns. By running the backend locally, cotrace guarantees that document content never leaves the user's machine outside of the direct API calls to Google and Anthropic that the user has explicitly authorized.
+A central architectural decision was to run the backend server locally rather than hosting it as a cloud service. This choice directly addresses the privacy requirements of collaborative document analysis: users querying CoTrace may be working with confidential documents, proprietary research, or commercially sensitive content. Routing document content through a third-party hosted server would introduce data retention risks and potential compliance concerns. By running the backend locally, CoTrace guarantees that document content never leaves the user's machine outside of the direct API calls to Google and Anthropic that the user has explicitly authorized.
 
-The tradeoff of this approach is that users must have Node.js installed and must start the backend server manually before using the extension, a friction point that would be addressed in a production deployment by bundling the server as an Electron process or packaging it into the Chrome Extension itself using a service worker with persistent background execution.
+The trade-off of this approach is that users must have Node.js installed and must start the backend server manually before using the extension, a friction point that would be addressed in a production deployment by bundling the server as an Electron process or packaging it into the Chrome extension itself using a service worker with persistent background execution.
 
 ## Hardware and Software Requirements
 
@@ -53,9 +53,9 @@ The tradeoff of this approach is that users must have Node.js installed and must
 
 ### Technology Stack
 
-The frontend is built entirely on Chrome Extension APIs conforming to Manifest v3, the current extension standard introduced by Google in 2023. Manifest v3 replaces persistent background pages with ephemeral service workers, which are event-driven processes that terminate when idle and are restarted on demand. This architectural constraint has a direct consequence for cotrace's state management: because the background service worker cannot hold data in memory across invocations, all persistent state, including the OAuth access token, the currently active file metadata, and per-document chat history, must be serialized to Chrome's local storage API. Every module that requires this data reads it from storage at the point of use rather than relying on in-memory references. This design pattern, while adding a small latency overhead per operation, ensures the extension remains compatible with Manifest v3's resource lifecycle and avoids the class of bugs that arise from stale in-memory state in long-running sessions.
+The frontend is built entirely on Chrome extension APIs conforming to Manifest v3, the current extension standard introduced by Google in 2023. Manifest v3 replaces persistent background pages with ephemeral service workers, which are event-driven processes that terminate when idle and are restarted on demand. This architectural constraint has a direct consequence for CoTrace's state management: because the background service worker cannot hold data in memory across invocations, all persistent state, including the OAuth access token, the currently active file metadata, and per-document chat history, must be serialized to Chrome's local storage API. Every module that requires this data reads it from storage at the point of use rather than relying on in-memory references. This design pattern, while adding a small latency overhead per operation, ensures the extension remains compatible with Manifest v3's resource lifecycle and avoids the class of bugs that arise from stale in-memory state in long-running sessions.
 
-The backend is implemented in Node.js using the Express framework for HTTP routing. Node.js was selected because its asynchronous, non-blocking I/O model is well-suited to the workload profile of the cotrace backend, which spends the majority of its execution time awaiting responses from external APIs rather than performing CPU-bound computation. A single incoming request to the `/summarize` endpoint may trigger multiple sequential and parallel outbound requests: first to Google Drive for revision metadata, then for the content of each revision snapshot, and finally to the Anthropic Claude API, all of which are I/O-bound. Node.js handles this concurrency model efficiently without the overhead of thread-per-request architectures that would be required in a synchronous server framework.
+The backend is implemented in Node.js using the Express framework for HTTP routing. Node.js was selected because its asynchronous, non-blocking I/O model is well suited to the workload profile of the CoTrace backend, which spends the majority of its execution time awaiting responses from external APIs rather than performing CPU-bound computation. A single incoming request to the `/summarize` endpoint may trigger multiple sequential and parallel outbound requests: first to Google Drive for revision metadata, then for the content of each revision snapshot, and finally to the Anthropic Claude API, all of which are I/O-bound. Node.js handles this concurrency model efficiently without the overhead of thread-per-request architectures that would be required in a synchronous server framework.
 
 The AI summarization layer uses the Anthropic Claude API, specifically prompted to produce structured JSON output conforming to a schema that captures the authoring user, a semantic description of what changed, and the overall editing pattern (e.g., restructuring, expansion, clarification, or deletion). This structured output format was chosen over free-form prose generation because it enables the extension to render summaries in a consistent UI layout and supports future filtering of summaries by author or change type. The backend renders the structured JSON response into Markdown before returning it to the extension, where the `marked.min.js` library handles final HTML rendering in the popup.
 
@@ -75,7 +75,7 @@ Separating the rendering layer from the data-fetching layer means the popup can 
 
 ### System Boundary
 
-cotrace operates entirely within the boundary of documents the authenticated user has permission to access through Google Drive. The extension requests only read-only OAuth scopes (`drive.readonly`, `drive.metadata.readonly`, `documents.readonly`, `spreadsheets.readonly`) and cannot modify, delete, or share any document. All data processing occurs either locally in the browser or on the user's local backend server, with the exception of the two explicitly user-authorized external calls: to Google Drive for revision content and to the Anthropic Claude API for semantic summarization. No telemetry, usage data, or document content is transmitted to any other endpoint.
+CoTrace operates entirely within the boundary of documents the authenticated user has permission to access through Google Drive. The extension requests only read-only OAuth scopes (`drive.readonly`, `drive.metadata.readonly`, `documents.readonly`, `spreadsheets.readonly`) and cannot modify, delete, or share any document. All data processing occurs either locally in the browser or on the user's local backend server, with the exception of the two explicitly user-authorized external calls: to Google Drive for revision content and to the Anthropic Claude API for semantic summarization. No telemetry, usage data, or document content is transmitted to any other endpoint.
 
 ## Content Revision Architecture
 
@@ -94,7 +94,7 @@ while (nextPageToken) {
 }
 ```
 
-This approach enables cotrace to handle documents with 100+ revisions, converting a practical limitation into comprehensive coverage of authorship and change patterns.
+This approach enables CoTrace to handle documents with 100+ revisions, converting a practical limitation into comprehensive coverage of authorship and change patterns.
 
 ## Change Analysis Algorithm
 
@@ -177,7 +177,7 @@ Hemani was clearly the primary document maintainer, making over half of all the 
 
 ## Test Datasets and Evaluation Corpus
 
-The cotrace system was evaluated using a curated collection of real-world collaborative documents:
+The CoTrace system was evaluated using a curated collection of real-world collaborative documents:
 
 ### Dataset Composition
 - **Total documents analyzed:** 8 Google Docs spanning computer science, collaborative research, and technical writing
@@ -214,7 +214,7 @@ This design enables users to maintain context across browser sessions without tr
 
 ## Evaluation Metrics and Quality Assessment
 
-The quality of cotrace's semantic summaries is evaluated across multiple dimensions:
+The quality of CoTrace's semantic summaries is evaluated across multiple dimensions:
 
 ### Accuracy Metrics
 
@@ -321,15 +321,7 @@ The system implements graceful degradation:
 While the current evaluation framework provides functional validation, several dimensions remain for future rigorous assessment:
 
 ### Limitations
-- **Limited human evaluation:** Current assessment relies primarily on informal user feedback from 1 evaluator; formal user study with 20+ participants would strengthen claims
-- **Benchmark selection bias:** Test documents derive from academic/technical domains; evaluation on business, creative, or other document types could reveal generalization gaps
-- **Claude API non-determinism:** Different API calls may produce varying summaries even for identical inputs, complicating reproducibility testing
-- **Baseline comparison:** Current evaluation lacks direct comparison with alternative tools (e.g., Google Docs version history UI, GitHub diffs, standalone diff viewers)
+Current assessment relies primarily on informal user feedback from one evaluator, so a formal study with 20 or more participants would strengthen the claims. The benchmark documents are also concentrated in academic and technical domains, which means evaluation on business, creative, and other document types could reveal generalization gaps. In addition, Claude API non-determinism means repeated calls can produce varying summaries for identical inputs, which complicates reproducibility testing. Finally, the current evaluation does not include direct baseline comparisons against alternative tools such as the Google Docs version history interface, GitHub diffs, or standalone diff viewers.
 
 ### Recommended Future Evaluation
-- **Controlled user study:** Compare task completion time and comprehension between cotrace summaries and manual diff reading
-- **Precision/recall testing:** Formal evaluation of pattern classification accuracy on 100+ manually-labeled examples
-- **Multi-domain validation:** Extend test corpus to include business documents, creative writing, technical code, and legal documents
-- **Comparative analysis:** Benchmark cotrace summaries against competing approaches (syntax-only diff, line-count statistics, LLM-agnostic baselines)
-- **Automated metrics:** Implement BLEU or ROUGE scores comparing summaries against human-written reference summaries
-- **Long-term usability:** Longitudinal study tracking user engagement and summary utility over weeks of actual usage
+A stronger future evaluation plan should include a controlled user study that compares task completion time and comprehension between CoTrace summaries and manual diff reading. It should also include formal precision and recall testing for pattern classification on at least 100 manually labeled examples, along with multi-domain validation on business documents, creative writing, technical code, and legal documents. Comparative benchmarking against competing approaches, including syntax-only diffs, line-count statistics, and LLM-agnostic baselines, would further clarify CoTrace's relative strengths and weaknesses. In addition, automated metrics such as BLEU or ROUGE could be used to compare generated summaries with human-written reference summaries. Finally, a longitudinal usability study over several weeks of real usage would provide stronger evidence about engagement, trust, and sustained summary utility.
