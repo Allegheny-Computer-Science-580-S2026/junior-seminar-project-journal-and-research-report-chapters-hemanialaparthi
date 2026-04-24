@@ -1,18 +1,17 @@
 # Experimental Results
 
-This chapter evaluates the performance characteristics of CoTrace's semantic summarization pipeline, with a specific focus on understanding how document size impacts latency. The primary goal of this experimental study is to assess how the volume of content processed by CoTrace's LLM integration affects response times across different stages of the pipeline. Understanding these performance characteristics is critical for optimizing user experience and identifying potential bottlenecks in the summarization workflow.
+This chapter evaluates the performance characteristics of CoTrace's semantic summarization pipeline, with a specific focus on understanding how document size impacts latency. The primary goal of this experimental study is to assess how the volume of content processed by CoTrace's large language model (LLM) integration affects response times across different stages of the pipeline. Understanding these performance characteristics is critical for optimizing user experience and identifying potential bottlenecks in the summarization workflow.
+To provide a comprehensive evaluation, this chapter examines both server-side and client-side latency metrics. Server-side metrics include the time required to fetch document revisions, generate content diffs, and stream responses from the large language model API. Client-side metrics capture the full user-perceived latency, including network transmission and user interface rendering effects. By analyzing both perspectives, this study aims to identify which components of the pipeline are most sensitive to document size and where optimization efforts should be focused.
 
-To provide a comprehensive evaluation, this chapter examines both server-side and client-side latency metrics. Server-side metrics include the time required to fetch document revisions, generate content diffs, and stream responses from the LLM API. Client-side metrics capture the full user-perceived latency, including network transmission and UI rendering effects. By analyzing both perspectives, this study aims to identify which components of the pipeline are most sensitive to document size and where optimization efforts should be focused.
-
-The experiments conducted in this study are designed to be reproducible and transparent. All measurement instrumentation has been integrated directly into CoTrace's codebase, with timing data automatically collected and exported in structured CSV format. This approach ensures that the experimental methodology can be replicated by other researchers or practitioners interested in evaluating similar LLM-powered Chrome extensions. The findings from these experiments provide practical insights into the scalability characteristics of semantic summarization systems built on large language models.
+The experiments conducted in this study are designed to be reproducible and transparent. All measurement instrumentation has been integrated directly into CoTrace's codebase, with timing data automatically collected and exported in structured comma-separated value (CSV) format. This approach ensures that the experimental methodology can be replicated by other researchers or practitioners interested in evaluating similar LLM-powered Chrome extensions. The findings from these experiments provide practical insights into the scalability characteristics of semantic summarization systems built on large language models.
 
 ## Research Question
 
 The central research question driving this experimental study is: **How does document size impact the latency of semantic summarization in CoTrace's LLM pipeline?** This question is motivated by practical concerns about user experience and system scalability. As users work with increasingly large Google Docs documents, understanding how processing time scales with document size becomes essential for maintaining responsive interactions.
 
-Document size in this context is operationalized as the total character count of the content summary sent to the LLM, which includes the system prompt, document diffs, and contextual information extracted from recent revisions. This metric represents the actual payload processed by the language model, rather than the raw document length, making it a more accurate predictor of computational load. The relationship between this input size and various latency metrics forms the core of the experimental investigation.
+Document size in this context is operationalized as the total character count of the prompt sent to the LLM, which includes the system prompt, document diffs, and contextual information extracted from recent revisions. This metric represents the actual payload processed by the language model, rather than the raw document length, making it a more accurate predictor of computational load. The relationship between this input size and various latency metrics forms the core of the experimental investigation.
 
-The research question also implicitly asks whether certain latency components are more sensitive to document size than others. For instance, the time to first token (TTFT) might exhibit different scaling behavior compared to total streaming duration. Similarly, server-side processing time might scale differently than client-side perceived latency. By disaggregating these components, the study aims to provide a nuanced understanding of where document size creates performance bottlenecks.
+The research question also implicitly asks whether certain latency components are more sensitive to document size than others. For instance, the time to first token, meaning the latency until the first model token is returned, might exhibit different scaling behavior compared to total streaming duration. Similarly, server-side processing time might scale differently than client-side perceived latency. By disaggregating these components, the study aims to provide a nuanced understanding of where document size creates performance bottlenecks.
 
 ## Experimental Design
 
@@ -20,7 +19,7 @@ The experimental design follows a controlled, quantitative approach to measure l
 
 The experiment treats document size as the independent variable, systematically varied across four distinct levels to capture a representative range of typical usage scenarios. For each document size level, multiple trials are conducted using identical query text to ensure that response generation complexity remains constant. This controlled repetition allows for statistical analysis of variance and identification of consistent trends despite inherent noise in network latency and API response times.
 
-A critical aspect of the experimental design is the distinction between server-side and client-side latency measurements. Server-side metrics are captured through instrumentation in CoTrace's Node.js backend, recording timestamps at key pipeline stages: request receipt, revision fetching, diff generation, first LLM token arrival, and stream completion. Client-side metrics are captured in the Chrome extension popup using the Performance API, measuring the full user-perceived latency from query submission to final UI rendering. This dual measurement approach provides comprehensive visibility into the complete request lifecycle.
+A critical aspect of the experimental design is the distinction between server-side and client-side latency measurements. Server-side metrics are captured through instrumentation in CoTrace's Node.js backend, recording timestamps at key pipeline stages: request receipt, revision fetching, diff generation, first token arrival from the LLM, and stream completion. Client-side metrics are captured in the Chrome extension popup using the browser Performance API, measuring the full user-perceived latency from query submission to final user interface rendering. This dual measurement approach provides comprehensive visibility into the complete request lifecycle.
 
 ### Variables and Controls
 
@@ -28,7 +27,7 @@ The independent variable in this study is **content summary size**, measured in 
 
 The primary dependent variables are:
 
-- **Server Time to First Byte (server_ttfb_ms)**: The duration from when the server receives the chat request until the first token is received from the Claude API. This metric isolates the LLM's initial response latency.
+- **Server Time to First Token (server_ttfb_ms)**: The duration from when the server receives the chat request until the first token is received from the Claude API. This metric isolates the LLM's initial response latency.
 - **Server Total Time (server_total_ms)**: The complete duration of server-side processing, from request receipt through final stream completion. This captures the full backend pipeline performance.
 - **Client Total Time (client_total_ms)**: The user-perceived latency from query submission in the popup UI until the complete response is rendered. This includes network round-trip time and UI rendering overhead.
 - **Content Summary Characters (content_summary_chars)**: The exact character count of the prompt sent to the LLM, serving as the precise size metric for analysis.
@@ -52,7 +51,7 @@ On the backend (server.js), the streaming request handler was enhanced to record
 4. **First Token Received**: Logged when the first chunk arrives from the Claude API stream
 5. **Stream Complete**: Recorded when the final chunk is received and the stream closes
 
-These timestamps are packaged into a metadata object and transmitted to the client via a special Server-Sent Events (SSE) message with type `meta`. This approach keeps timing data separate from the actual chat response content, preventing interference with the UI rendering logic.
+These timestamps are packaged into a metadata object and transmitted to the client via a special Server-Sent Events (SSE) message with type `meta`. This approach keeps timing data separate from the actual chat response content, preventing interference with the user interface rendering logic.
 
 On the client side (chat.js), complementary instrumentation captures the user's perspective:
 
@@ -62,7 +61,7 @@ On the client side (chat.js), complementary instrumentation captures the user's 
 
 The client-side code also extracts the server-provided metadata and combines it with local timings to create a complete latency record. Each record is then appended to a CSV dataset stored in Chrome's local storage (`chrome.storage.local`), accumulating results across multiple experimental runs. A dedicated export function in the settings menu allows researchers to download the complete dataset as a timestamped CSV file for offline analysis.
 
-This instrumentation architecture ensures that all latency components are captured with minimal overhead, typically adding less than 1ms of measurement cost per request. The automated CSV logging eliminates manual data collection errors and enables efficient execution of multiple experimental trials.
+This instrumentation architecture ensures that all latency components are captured with minimal overhead, typically adding less than 1 ms of measurement cost per request. The automated CSV logging eliminates manual data collection errors and enables efficient execution of multiple experimental trials.
 
 ### Document Size Manipulation
 
@@ -76,7 +75,7 @@ The base document began at approximately 1,000 characters, representing a minima
 
 Each content addition was designed to trigger a new revision in Google Docs' version history, ensuring that CoTrace's diff generation would process the incremental changes. After each major content addition, sufficient time was allowed for Google Docs to commit the revision (typically 1-2 minutes of idle time). In some cases, revisions were explicitly created using the "Name current version" feature in Google Docs version history to ensure clean revision boundaries.
 
-The content itself consisted of technical documentation related to the same domain as CoTrace's intended use cases, ensuring that the LLM would process semantically meaningful text rather than lorem ipsum filler. This approach maintains ecological validity—the documents resemble actual working documents that CoTrace users would analyze in practice.
+The content itself consisted of technical documentation related to the same domain as CoTrace's intended use cases, ensuring that the LLM would process semantically meaningful text rather than lorem ipsum filler. This approach maintains ecological validity because the documents resemble actual working documents that CoTrace users would analyze in practice.
 
 ### Experimental Procedure
 
@@ -97,8 +96,8 @@ The experimental procedure was designed for systematic execution with minimal so
     - Exported CSV data after completing all trials for the current size
 
 3. **Document Expansion Phase**:
-    - Added substantial content block to increase document size
-    - Waited for Google Docs revision creation (~2 minutes)
+    - Added a substantial content block to increase document size
+    - Waited for Google Docs revision creation (approximately 2 minutes)
     - Verified new revision appeared in version history
     - Returned to Trial Execution Phase for next size level
 
@@ -115,11 +114,9 @@ Several methodological choices warrant explicit discussion to properly contextua
 
 Second, the choice of 10 trials per condition balances statistical requirements with practical feasibility. With inherent variability in network latency and API processing time, 10 samples provide sufficient power to detect moderate effect sizes while remaining feasible to execute in a single experimental session. Larger sample sizes would improve precision but face diminishing returns given the multiple sources of uncontrolled variance.
 
-Third, client-side latency measurements include the UI rendering animation, which adds approximately 10ms per character of response text. This typing animation creates artificial latency that obscures the underlying LLM processing time. However, this is the actual latency perceived by users, making it a valid metric for user experience evaluation. Server-side metrics provide a purer measure of processing time independent of UI effects.
+Third, client-side latency measurements include the user interface rendering animation, which adds approximately 10 ms per character of response text. This typing animation creates artificial latency that obscures the underlying LLM processing time. However, this is the actual latency perceived by users, making it a valid metric for user experience evaluation. Server-side metrics provide a purer measure of processing time independent of user interface effects.
 
 Finally, this experiment measures latency under normal operating conditions without artificial load or concurrent requests. The results therefore reflect typical single-user performance but may not generalize to high-load scenarios where API rate limiting or server resource contention could introduce additional latency factors.
-
-## Evaluation
 
 ### Descriptive Statistics
 
@@ -139,7 +136,7 @@ Figure 1 visualizes the server-side latency trends across document sizes, showin
 
 ![Server latency vs document size with error bars showing mean ± 1 SD](images/latency_plot.png)
 
-The server time to first byte (TTFB) shows minimal variation across the first three size levels (approximately 1.5 seconds), with a notable increase at the largest document size (1.9 seconds). This pattern suggests that TTFB remains relatively stable for documents up to approximately 30,000 characters but may increase for very large documents exceeding 40,000 characters.
+The server time to first token shows minimal variation across the first three size levels (approximately 1.5 seconds), with a notable increase at the largest document size (1.9 seconds). This pattern suggests that first-token latency remains relatively stable for documents up to approximately 30,000 characters but may increase for very large documents exceeding 40,000 characters.
 
 Server total time exhibits similar stability across small and medium documents (approximately 4.5-4.7 seconds) with an increase at the largest size (5.4 seconds). The jump of approximately 700ms between the third and fourth size levels represents a 15% increase in processing time, suggesting that document size effects become more pronounced beyond a certain threshold.
 
@@ -149,8 +146,7 @@ Client-side total time shows high variability (standard deviations of 1,000-2,00
 
 To quantify the strength of relationships between document size and latency metrics, Pearson correlation coefficients were computed using all 40 data points (pooled across size levels):
 
-:
-Correlation Between Content Size and Latency Metrics (n=40) {#tbl-correlation}
+: Correlation Between Content Size and Latency Metrics (n=40) {#tbl-correlation}
 
 | Latency Metric        | Correlation with Size | Interpretation    |
 |:----------------------|:---------------------:|:------------------|
@@ -158,7 +154,7 @@ Correlation Between Content Size and Latency Metrics (n=40) {#tbl-correlation}
 | Server Total (ms)     | r = 0.309             | Weak positive     |
 | Client Total (ms)     | r = -0.038            | No relationship   |
 
-The server-side metrics show weak positive correlations with document size (r = 0.31-0.37), indicating that larger documents do tend to produce longer processing times, though the relationship is not strong. These modest correlations suggest that document size explains approximately 10-14% of the variance in server-side latency (r² = 0.095-0.139).
+The server-side metrics show weak positive correlations with document size (r = 0.31-0.37), indicating that larger documents do tend to produce longer processing times, though the relationship is not strong. These modest correlations suggest that document size explains approximately 10 to 14% of the variance in server-side latency (r² = 0.095-0.139).
 
 The near-zero correlation between document size and client-side latency (r = -0.038) confirms that user-perceived response time is dominated by factors other than document size. Network latency, UI rendering animation, and browser resource availability likely contribute more substantially to client-side timing than the underlying document processing characteristics.
 
@@ -166,13 +162,13 @@ The near-zero correlation between document size and client-side latency (r = -0.
 
 Examining the progression of means across size levels reveals a threshold effect rather than a linear relationship. For the first three size levels (1K-29K characters), latency metrics remain remarkably stable:
 
-- Server TTFB varies by only 120ms (1,599 → 1,479 → 1,479ms)
-- Server Total varies by only 150ms (4,672 → 4,522 → 4,670ms)
+- Server time to first token varies by only 120 ms (1,599 to 1,479 to 1,479 ms)
+- Server total time varies by only 150 ms (4,672 to 4,522 to 4,670 ms)
 
 However, at the largest size level (42,805 characters), both metrics show substantial increases:
 
-- Server TTFB increases by 436ms (from 1,479ms to 1,915ms, a 29% jump)
-- Server Total increases by 695ms (from 4,670ms to 5,365ms, a 15% jump)
+- Server time to first token increases by 436 ms (from 1,479 ms to 1,915 ms, a 29% jump)
+- Server total time increases by 695 ms (from 4,670 ms to 5,365 ms, a 15% jump)
 
 This pattern suggests a threshold effect where document size has minimal impact below approximately 30,000 characters but begins to noticeably affect latency beyond that point. Such threshold behavior is plausible given how LLMs process input: smaller variations in prompt length may not materially affect inference time until the input approaches certain architectural boundaries (such as attention window sizes or batch processing thresholds).
 
@@ -198,7 +194,7 @@ Several methodological limitations must be acknowledged when interpreting these 
 
 Second, the experiment measured only one specific query type ("Give a 3-sentence overview"). Different query types that request longer responses or more complex analysis might exhibit different scaling behavior. However, maintaining constant query complexity was essential for isolating the effect of document size, making this trade-off necessary for experimental validity.
 
-Third, the character count metric, while practical and easily measured, imperfectly represents the true computational load on the LLM. Token count would be a more direct measure, but varies with tokenization schemes and was not readily accessible during instrumentation. The relationship between character count and token count is generally stable for English prose (approximately 4 characters per token), suggesting that character count serves as a reasonable proxy.
+Third, the character count metric, while practical and easily measured, imperfectly represents the true computational load on the LLM. Token count would be a more direct measure, but varies with tokenization schemes and was not readily accessible during instrumentation. The relationship between character count and token count is generally stable for English prose, at approximately 4 characters per token, suggesting that character count serves as a reasonable proxy.
 
 Fourth, the sample size of 10 trials per condition, while adequate for detecting large effects, provides limited power for identifying subtle trends or interaction effects. The inherent variability in network and API processing times means that larger sample sizes would be required to precisely characterize the document size-latency relationship.
 
@@ -217,15 +213,15 @@ Despite these limitations, the findings offer several actionable insights for Co
 
 3. **Server-side optimization should be prioritized**: Since document size effects appear primarily in server-side metrics, optimization efforts should focus on the backend pipeline (revision fetching, diff generation, prompt construction) rather than client-side UI rendering.
 
-4. **User expectations can be set appropriately**: The relatively stable latency across typical document sizes allows for predictable user experience messaging. UI improvements like progress indicators or estimated time remaining could leverage these baseline timings.
+4. **User expectations can be set appropriately**: The relatively stable latency across typical document sizes allows for predictable user experience messaging. User interface improvements like progress indicators or estimated time remaining could leverage these baseline timings.
 
 ### Future Research Directions
 
 This initial performance characterization opens several avenues for future investigation:
 
-1. **Query complexity effects**: Measuring how different query types (summarization vs. specific questions vs. multi-turn dialogues) interact with document size to affect latency.
+1. **Query complexity effects**: Measuring how different query types (summarization versus specific questions versus multi-turn dialogues) interact with document size to affect latency.
 
-2. **Revision depth optimization**: Systematically varying the number of revisions analyzed (currently fixed at 20) to identify optimal trade-offs between context richness and processing time.
+2. **Revision depth optimization**: Systematically varying the number of revisions analyzed, currently fixed at 20, to identify optimal trade-offs between context richness and processing time.
 
 3. **Prompt compression techniques**: Evaluating whether semantic compression of document diffs can reduce latency while maintaining summarization quality.
 
@@ -241,7 +237,7 @@ This chapter presented a systematic experimental evaluation of how document size
 
 The key finding is a weak positive relationship (r = 0.31-0.37) between document size and server-side latency, with a notable threshold effect emerging at approximately 40,000 characters. Below this threshold, latency remains remarkably stable at approximately 4.5 seconds for total processing time and 1.5 seconds for time to first token. Above this threshold, processing time increases by approximately 15%, suggesting that very large documents may benefit from specialized optimization.
 
-Client-side latency shows no correlation with document size (r = -0.038), indicating that user-perceived response time is dominated by UI rendering and network factors rather than document processing complexity. This finding validates the architectural decision to stream responses incrementally, as the streaming interface masks backend processing time variations.
+Client-side latency shows no correlation with document size (r = -0.038), indicating that user-perceived response time is dominated by user interface rendering and network factors rather than document processing complexity. This finding validates the architectural decision to stream responses incrementally, as the streaming interface masks backend processing time variations.
 
 From a practical standpoint, these results demonstrate that CoTrace delivers responsive performance for typical collaborative writing scenarios while identifying a clear optimization target for very large documents. The experimental methodology and instrumentation framework established in this study provide a foundation for ongoing performance monitoring and optimization as the system evolves.
 
