@@ -30,6 +30,8 @@ jobs:
         if: always()
       - name: Render the PDF
         run: |
+          quarto install chromium
+          quarto install chrome-headless-shell
           quarto render report/index.qmd --to allegheny-cis-pdf
           cp _site/report/index.pdf _site/report/JuniorSeminarReport.pdf
         if: always()
