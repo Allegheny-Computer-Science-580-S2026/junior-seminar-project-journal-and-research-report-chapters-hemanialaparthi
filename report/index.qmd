@@ -10,7 +10,7 @@ format:
 natbiboptions: numbers
 # EDIT AT YOUR OWN PERIL #
 
-title: cotrace - Semantic Analysis and Summarization of Collaborative Document Revisions
+title: CoTrace - Semantic Analysis and Summarization of Collaborative Document Revisions
 
 firstreader: Professor Gregory M. Kapfhammer
 secondreader: Student Second Reader
@@ -28,7 +28,15 @@ author:
       postal-code: 16335
 
 abstract: |
-  A well-researched student project completed during the Junior Seminar.
+  With over 30 million Google Docs users generating millions of collaborative edits daily, the inability to quickly comprehend document changes represents a massive productivity bottleneck in modern knowledge work.
+
+  Collaborative document editing generates extensive revision histories that obscure meaningful changes and impede effective version control. Current solutions force users to manually inspect granular edit logs, creating friction in team workflows and making it difficult to track document evolution, attribute contributions, or understand the rationale behind changes.
+
+  This paper presents CoTrace, a browser-based system that leverages large language models to automatically synthesize Google Docs revision data into coherent change summaries. CoTrace intercepts document access events, extracts revision metadata via the Google Docs API, and employs Claude AI to generate natural language summaries of inter-version modifications. The system additionally attributes contributions to individual collaborators and supports interactive querying of document evolution patterns through a conversational interface.
+
+  CoTrace was evaluated across documents spanning 100 to 6,000 words, demonstrating consistent processing latency of 4.5 to 5.2 seconds regardless of document length. The system successfully executes revision extraction, semantic change summarization, and contributor attribution with 100% reliability in the test corpus, reducing the typical 3 to 5 minute manual review process to under 6 seconds, a 30 to 60x improvement in change comprehension speed.
+
+  Future research directions include expanding support to more Google Workspace tools such as Google Sheets, Google Slides, and other related apps, so the system can be useful across a wider range of school and workplace workflows. Additionally, experiment with different AI models to compare summary quality, speed, and accuracy, since some models may work better for certain types of documents than others. Another important direction is performance optimization, especially for larger document collections, so the system can stay fast and responsive even when handling enterprise-scale data.
 ---
 
 {{< include _introduction.qmd >}}
