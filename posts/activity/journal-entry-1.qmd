@@ -9,16 +9,52 @@ description: "What is your research idea?"
 
 ## What is your research idea?
 
-In this first journal entry, describe the problem you plan to investigate and
-your initial approach. Please answer the following questions:
+The problem I plan to investigate is how to quickly understand changes in collaborative documents across multiple platforms. In systems like Google Docs, Google Sheets, and GitHub, multiple authors make edits asynchronously, creating long version histories that are difficult and time-consuming to review. While existing tools show _what_ changed, they rarely summarize who made which changes, how the document evolved, or the significance of those edits in a concise, human-readable way.
 
-- What is the main problem or question you want to address?
-- Why is this problem important or interesting?
-- What is your initial approach to solving this problem?
-- What tools, technologies, or methods do you plan to use?
-- What do you hope to achieve or discover?
-- What is one published research paper in your area?
+### What is the main problem or question you want to address?
 
-Remember to be specific and provide concrete examples where possible. This entry
-will serve as a foundation for your research project, so take time to think
-through your ideas carefully and to document this in this journal entry.
+How can we design a cross-platform system/tool that automatically summarizes multi-author edits and can localize where errors started in collaborative documents?
+
+### Why is this problem important or interesting?
+
+Collaborative writing and version-controlled work are fundamental in academia, software development, business, and creative projects. Teams who deal with huge data and writings often spend significant time manually reviewing changes, which slows collaboration and increases the risk of miscommunication or duplicated work.
+
+This problem is interesting solving this issue could improve onboarding for new collaborators, increase accountability, and reduce workload when managing complex projects.
+
+### What is your initial approach to solving this problem?
+
+My initial approach is to design a cross-platform version summarization tool that:
+
+1. Accesses version histories from multiple collaborative platforms (Google Docs, Google Sheets, GitHub).
+
+2. Normalizes changes into a unified data format, capturing  metadata like author, timestamp, type of change (addition, deletion, modification), and affected content.
+
+3. Uses AI and diff-based algorithms to generate semantic summaries, including:
+    - In depth overview of changes per version
+    - Per-author summaries
+    - When key edits were made
+    - Categorization of edits (e.g., content addition vs. rewording)
+    - Identification of potential error-introducing changes (still brainstorming this part).
+
+4. Presents results in a readable interface, such as a dashboard or browser extension.
+
+### What tools, technologies, or methods do you plan to use?
+
+- APIs: Google Docs API, GitHub API
+
+- Programming: Python for AI integration; possibly a web interface using JavaScript/React
+
+- AI / NLP: Large language models for summarization and edit attribution
+
+- Algorithms: Semantic similarity, edit classification
+
+- Evaluation: User studies measuring comprehension, time saved, and perceived usefulness
+
+### What do you hope to achieve or discover?
+
+I hope to create a functional prototype of the tool/system that can effectively **summarize** collaborative changes across multiple platforms. My plan is to demo a tool which can significantly reduce the time and effort required to understand document evolution in collaborative settings.
+
+### What is one published research paper in your area?
+
+[Kelly, Steven. Collaborative Modelling with Version Control.](https://www.metacase.com/papers/Collaborative_Modeling_with_Version_Control_final.pdf)
+
